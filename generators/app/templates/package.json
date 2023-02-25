@@ -1,0 +1,50 @@
+{
+  "name": "<%= name %>",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "private": true,
+  "dependencies": {<% if (plugins.includes('s3')) {%>
+    "@aws-sdk/client-s3": "^3.245.0",
+    "slugify": "^1.6.5",<%}%><% if (plugins.includes('cookie')) {%>
+    "@fastify/cookie": "^8.3.0",<%}%><% if (plugins.includes('cors')) {%>
+    "@fastify/cors": "^8.2.0",<%}%><% if (plugins.includes('jwt')){%>
+    "@fastify/jwt": "^6.5.0",<%}%><% if (plugins.includes('multipart')) {%>
+    "@fastify/multipart": "^7.4.0",<%}%><% if (plugins.includes('redis')) {%>
+    "@fastify/redis": "^6.1.0",<%}%><% if (plugins.includes('cors')) {%>
+    "@fastify/sensible": "^5.2.0",<%}%><% if (plugins.includes('swagger')) {%>
+    "@fastify/swagger": "^8.2.1",
+    "@fastify/swagger-ui": "^1.3.0",<%}%><% if (plugins.includes('mailer')) {%>
+    "nodemailer": "^6.9.0",
+    "ejs-nodemailer": "^0.1.0",<%}%>
+    "close-with-grace": "^1.1.0",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.11.0",
+    "fastify-plugin": "^4.4.0",
+    <% if (db === 'mongodb') {%>"mongoose": "^6.8.3"<%} else {%>"@prisma/client": "^4.8.1",
+    "prisma": "^4.8.1"<%}%>
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^1.0.1",
+    "@types/node": "^18.11.18",<% if (plugins.includes('mailer')) {%>
+    "@types/nodemailer": "^6.4.7",<%}%>
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@typescript-eslint/parser": "^5.46.1",
+    "eslint": "^8.30.0",
+    "eslint-plugin-import": "^2.26.0",
+    "json-schema-to-ts": "^2.6.2",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
+    "typescript": "^4.9.4",
+    "typescript-module-alias": "^2.2.9"
+  },
+  "scripts": {
+    "dev": "nodemon --exec typescript-module-alias ./src/index.ts",
+    "build": "typescript-module-alias-build ./src",<% if (db === 'postgresql') {%>
+    "migrate": "prisma migrate dev",<%}%>
+    "format": "yarn lint:write && yarn format:write",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint:check": "eslint . --ext .ts",
+    "lint:write": "eslint . --ext .ts --fix"
+  }
+}

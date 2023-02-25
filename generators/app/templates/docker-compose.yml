@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  <% if (plugins.includes('redis')) {%>redis:
+    image: redis:7.0.4-alpine
+    container_name: redis_local
+    restart: always
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    volumes:
+      - redislocal:/data
+  <%}%><% if (db === 'mongodb') {%>mongodb:
+    image: mongo:6.0.3
+    container_name: mongodb_local
+    restart: always
+    ports:
+      - '${DB_PORT:-27017}:27017'
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER:-my_user}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASS:-password123}
+      - MONGO_INITDB_DATABASE=${DB_NAME:-mydb}
+    volumes:
+      - mongodblocal:/data/db
+<%} else {%>postgresql:
+    image: bitnami/postgresql:15.1.0
+    container_name: posgresql_local
+    restart: always
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    environment:
+      - POSTGRESQL_USERNAME=${DB_USER:-my_user}
+      - POSTGRESQL_PASSWORD=${DB_PASS:-password123}
+      - POSTGRESQL_DATABASE=${DB_DB:-mydb}
+    volumes:
+      - postgreslocal:/bitnami/postgresql
+<%}%>
+volumes:
+  <% if (plugins.includes('redis')) {%>redislocal:
+  <%}%><% if (db === 'mongodb') {%>mongodblocal:<%} else {%>postgreslocal:<%}%>
