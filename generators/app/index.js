@@ -43,6 +43,7 @@ module.exports = class extends Generator {
       globOptions: {
         dot: true,
         ignore: [
+          `${template}/gitignore`,
           ...(this.props.plugins.includes('redis') ? [] : [`${template}/src/plugins/redis.ts`]),
           ...(this.props.db === 'postgresql'
             ? [`${template}/src/plugins/mongo`, `${template}/src/errors`]
@@ -66,6 +67,7 @@ module.exports = class extends Generator {
     };
 
     this.fs.copyTpl(template, dest, this.props, {}, copyOpts);
+    this.fs.copy(`${template}/gitignore`, `${dest}/.gitignore`);
   }
 
   install() {
