@@ -51,6 +51,10 @@ yo fastify-ts
 
 ## Changelog
 
+### [v0.1.4](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.4)
+
+- Fix bug with email plugin
+
 ### [v0.1.3](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.3)
 
 - Fix bug missing `.gitignore` file
