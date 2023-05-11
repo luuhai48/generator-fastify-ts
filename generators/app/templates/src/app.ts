@@ -94,7 +94,7 @@ export const appService = async function (app: FastifyInstance) {
           },
           consumes: ['application/json'],
           produces: ['application/json'],
-          securityDefinitions: {
+          <% if (plugins.includes('jwt')) {%>securityDefinitions: {
             Bearer: {
               type: 'apiKey',
               name: 'Authorization',
@@ -105,7 +105,7 @@ export const appService = async function (app: FastifyInstance) {
             {
               Bearer: [],
             },
-          ],
+          ],<%}%>
         },
       },
       swaggerUI: {
@@ -130,11 +130,11 @@ export const appService = async function (app: FastifyInstance) {
       mydb: {
         uri: app.cfg.get('DATABASE_URL'),
       },
-    } as IMongoDBPluginOpts),<%} else {%>app.register(prismaPlugin),<%}%>
-  ]);<%}%><% if (plugins.includes('jwt')) {%>
+    } as IMongoDBPluginOpts),<%} else {%>app.register(prismaPlugin),<%}%><% if (plugins.includes('jwt')) {%>
     app.register(jwtPlugin, {
       secret: app.cfg.get('JWT_SECRET'),
     } as IJwtPluginOpts),<%}%>
+  ]);<%}%>
 
   await app.register(registerRoutes, {
     prefix: `/api/v${app.cfg.get('API_VERSION') || 1}`,
