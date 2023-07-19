@@ -9,7 +9,7 @@
 - [@fastify/sensible](https://github.com/fastify/fastify-sensible) - easier working with response.
 - [@fastify/swagger](https://github.com/fastify/fastify-swagger) and [@fastify/swagger-ui](https://github.com/fastify/fastify-swagger-ui) - serving Swagger (OpenAPI v2) or OpenAPI v3 schemas, which are automatically generated from your route schemas, or from an existing Swagger/OpenAPI schema.
 - [@fastify/jwt](https://github.com/fastify/fastify-jwt)
-- [@fastify/multipart](https://github.com/fastify/fastify-multipart) - handle file upload.
+- [fastify-multer](https://github.com/fox1t/fastify-multer) - handle file upload.
 - [@fastify/redis](https://github.com/fastify/fastify-redis) - Connect and work with ioredis
 - [@fastify/cookie](https://github.com/fastify/fastify-cookie) - adds support for reading and setting cookies.
 - nodemailer - send email with [nodemailer](https://github.com/nodemailer/nodemailer) and [ejs](https://github.com/mde/ejs) template engine.
@@ -51,6 +51,11 @@ yo fastify-ts
 
 ## Changelog
 
+### [v0.1.5](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.5)
+
+- Replace `@fastify/multipart` with `fastify-multer`
+- Fix bug with s3 plugin
+
 ### [v0.1.4](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.4)
 
 - Fix bug with email plugin
@@ -61,7 +66,7 @@ yo fastify-ts
 
 ## License
 
-MIT © [luuhai48](luuhai48.github.io)
+MIT © [luuhai48](luuhai48.com)
 
 [npm-image]: https://badge.fury.io/js/generator-fastify-ts.svg
 [npm-url]: https://npmjs.org/package/generator-fastify-ts

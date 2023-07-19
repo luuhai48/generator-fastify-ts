@@ -16,9 +16,8 @@ import {
   mailerPlugin,
   IMailerPluginOpts,<%}%><% if (plugins.includes('s3')) {%>
   s3Plugin,
-  IS3PluginOpts,<%}%><% if (plugins.includes('multipart')) {%>
-  multipartPlugin,
-  IMultipartPluginOpts,<%}%><% if (plugins.includes('cookie')) {%>
+  IS3PluginOpts,<%}%><% if (plugins.includes('multer') || plugins.includes('s3')) {%>
+  multerPlugin,<%}%><% if (plugins.includes('cookie')) {%>
   cookiePlugin,
   ICookiePluginOpts,<%}%><% if (plugins.includes('jwt')) {%>
   jwtPlugin,
@@ -63,15 +62,8 @@ export const appService = async function (app: FastifyInstance) {
       parseOptions: {
         sameSite: 'none',
       },
-    } as ICookiePluginOpts),<%}%><% if (plugins.includes('multipart')) {%>
-    app.register(multipartPlugin, {
-      attachFieldsToBody: true,
-      limits: {
-        fileSize: 1024 * 1024 * 5,
-        files: 10,
-        fields: 0,
-      },
-    } as IMultipartPluginOpts),<%}%><% if (plugins.includes('mailer')) {%>
+    } as ICookiePluginOpts),<%}%><% if (plugins.includes('multer') || plugins.includes('s3')) {%>
+    app.register(multerPlugins),<%}%><% if (plugins.includes('mailer')) {%>
     app.register(mailerPlugin, {
       transport: {
         host: app.cfg.get('MAIL_HOST'),

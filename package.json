@@ -1,7 +1,7 @@
 {
   "name": "generator-fastify-ts",
-  "version": "0.1.4",
-  "description": "Fastify + Typescript boilerplate",
+  "version": "0.1.5",
+  "description": "Fastify + Typescript boilerplate with ready plugins",
   "homepage": "https://github.com/luuhai48/generator-fastify-ts.git",
   "author": {
     "name": "luuhai48",

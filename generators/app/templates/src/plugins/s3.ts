@@ -1,9 +1,11 @@
 import { extname } from 'path';
 
-import { GetObjectCommandOutput, S3 } from '@aws-sdk/client-s3';
-import { MultipartFile } from '@fastify/multipart';
+import { GetObjectCommand, GetObjectCommandOutput, S3 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import fp from 'fastify-plugin';
 import slugify from 'slugify';
+
+import type { File } from 'fastify-multer/lib/interfaces';
 
 export interface UploadedFile {
   path: string;
@@ -13,10 +15,12 @@ declare module 'fastify' {
   interface FastifyInstance {
     s3: {
       upload: (
-        files: MultipartFile | MultipartFile[],
-      ) => Promise<UploadedFile | UploadedFile[] | undefined>;
-
-      getFile: (fileKey: string) => Promise<GetObjectCommandOutput | undefined>;
+        files: File | File[],
+        includeTimestamp?: boolean,
+      ) => Promise<UploadedFile | UploadedFile[] | null>;
+      getFile: (fileKey: string) => Promise<GetObjectCommandOutput | null>;
+      getPresignedUrl: (fileKey: string) => Promise<string | null>;
+      getFileSize: (fileKey: string) => Promise<number | null>;
     };
   }
 }
@@ -39,23 +43,24 @@ export const s3Plugin = fp(async (app, opts: IS3PluginOpts) => {
     },
     ...(provider === 'aws'
       ? {
-          region,
-        }
+        region,
+      }
       : {
-          forcePathStyle: false,
-          endpoint: `https://${region}.digitaloceanspaces.com`,
-          region: 'us-east-1',
-        }),
+        forcePathStyle: false,
+        endpoint: `https://${region}.digitaloceanspaces.com`,
+        region: 'us-east-1',
+      }),
   });
 
-  const uploadFile = async (file: MultipartFile) => {
+  const uploadFile = async (file: File, includeTimestamp = true) => {
     const timestamp = Date.now();
-    const fileKey = `${slugify(file.filename)}-${timestamp}${extname(file.filename)}`;
+    const fileKey = `${slugify(file.originalname)}${includeTimestamp ? '-' + timestamp : ''
+      }${extname(file.originalname)}`;
     await s3Client.putObject({
       Bucket: bucketName,
       Key: fileKey,
       ContentType: file.mimetype,
-      Body: await file.toBuffer(),
+      Body: file.buffer,
     });
 
     return {
@@ -65,26 +70,59 @@ export const s3Plugin = fp(async (app, opts: IS3PluginOpts) => {
 
   app.decorate('s3', {
     upload: async (
-      files: MultipartFile | MultipartFile[],
-    ): Promise<UploadedFile | UploadedFile[] | undefined> => {
+      files: File | File[],
+      includeTimestamp = true,
+    ): Promise<UploadedFile | UploadedFile[] | null> => {
+      if (!files) {
+        return [];
+      }
+
       try {
         if (Array.isArray(files)) {
-          return Promise.all(files.map(async (file) => uploadFile(file)));
+          return await Promise.all(files.map(async (file) => uploadFile(file)));
         }
-        return uploadFile(files);
+        return await uploadFile(files, includeTimestamp);
       } catch {
-        return undefined;
+        return null;
       }
     },
 
     getFile: async (fileKey: string) => {
       try {
-        return s3Client.getObject({
+        return await s3Client.getObject({
           Bucket: bucketName,
           Key: fileKey,
         });
       } catch {
-        return undefined;
+        return null;
+      }
+    },
+
+    getPresignedUrl: async (fileKey: string) => {
+      try {
+        const url = await getSignedUrl(
+          s3Client,
+          new GetObjectCommand({
+            Bucket: bucketName,
+            Key: fileKey,
+          }),
+          { expiresIn: 60 * 15 },
+        );
+        return url;
+      } catch {
+        return null;
+      }
+    },
+
+    getFileSize: async (fileKey: string) => {
+      try {
+        const fileInfo = await s3Client.headObject({
+          Key: fileKey,
+          Bucket: bucketName,
+        });
+        return fileInfo.ContentLength || null;
+      } catch {
+        return null;
       }
     },
   });
