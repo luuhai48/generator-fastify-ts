@@ -51,6 +51,10 @@ yo fastify-ts
 
 ## Changelog
 
+### [v0.1.6](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.5)
+
+- Update types for plugin `s3`
+
 ### [v0.1.5](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.5)
 
 - Replace `@fastify/multipart` with `fastify-multer`
