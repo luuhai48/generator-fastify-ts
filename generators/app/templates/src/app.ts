@@ -12,10 +12,12 @@ import {
   s3Plugin,
   IS3PluginOpts,<%}%><% if (plugins.includes('multer') || plugins.includes('s3')) {%>
   multerPlugin,<%}%><% if (plugins.includes('cookie')) {%>
-  cookiePlugin,<%}%><% if (plugins.includes('jwt')) {%>
+  cookiePlugin,<%}%><% if (plugins.includes('bcrypt')) {%>
+  bcryptPlugin,<%}%><% if (plugins.includes('jwt')) {%>
   jwtPlugin,<%}%>
 } from '@/plugins';
 import { registerRoutes } from '@/routes';
+import { bcryptPlugin } from './plugins/bcrypt';
 
 export const appService = async function (app: FastifyInstance) {
   /**
@@ -48,7 +50,10 @@ export const appService = async function (app: FastifyInstance) {
       credentials: true,
       origin: true,
     }),<%}%><% if (plugins.includes('sensible')) {%>
-    app.register(sensiblePlugin),<%}%><% if (plugins.includes('cookie')) {%>
+    app.register(sensiblePlugin),<%}%><% if (plugins.includes('bcrypt')) {%>
+    app.register(bcryptPlugin, {
+      saltWorkFactor:: 12,
+    }),<%}%><% if (plugins.includes('cookie')) {%>
     app.register(cookiePlugin, {
       secret: app.cfg.get('COOKIE_SECRET') || 'cookiesecret',
       parseOptions: {
@@ -102,21 +107,21 @@ export const appService = async function (app: FastifyInstance) {
     }),<%}%><% if (plugins.includes('s3')) {%>
     app.register(s3Plugin, {
       provider: app.cfg.get('S3_PROVIDER') as IS3PluginOpts['provider'],
-      region: app.cfg.get('S3_REGION'),
-      bucketName: app.cfg.get('S3_BUCKET'),
-      accessKeyId: app.cfg.get('S3_ACCESS_KEY_ID'),
-      secretAccessKey: app.cfg.get('S3_SECRET_ACCESS_KEY'),
+      region: app.cfg.get('S3_REGION') || '',
+      bucketName: app.cfg.get('S3_BUCKET') || '',
+      accessKeyId: app.cfg.get('S3_ACCESS_KEY_ID') || '',
+      secretAccessKey: app.cfg.get('S3_SECRET_ACCESS_KEY') || '',
     }),<%}%><% if (plugins.includes('redis')) {%>
     app.register(redisPlugin, {
-      url: app.cfg.get('REDIS_URL'),
+      url: app.cfg.get('REDIS_URL') || '',
     }),<%}%><% if (db === 'mongodb') {%>
     app.register(mongodbPlugin, {
       mydb: {
-        uri: app.cfg.get('DATABASE_URL'),
+        uri: app.cfg.get('DATABASE_URL') || '',
       },
     }),<%} else {%>app.register(prismaPlugin),<%}%><% if (plugins.includes('jwt')) {%>
     app.register(jwtPlugin, {
-      secret: app.cfg.get('JWT_SECRET'),
+      secret: app.cfg.get('JWT_SECRET') || 'jwtsecret',
     }),<%}%>
   ]);<%}%>
 

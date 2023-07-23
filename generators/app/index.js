@@ -25,7 +25,7 @@ module.exports = class extends Generator {
         type: 'checkbox',
         name: 'plugins',
         message: 'Select optional plugin(s)',
-        choices: ['cors', 'sensible', 'swagger', 'redis', 'cookie', 'multer', 'mailer', 's3', 'jwt'],
+        choices: ['cors', 'sensible', 'swagger', 'redis', 'cookie', 'multer', 'mailer', 's3', 'jwt', 'bcrypt'],
         default: ['cors', 'sensible', 'swagger'],
       },
     ];
@@ -58,6 +58,7 @@ module.exports = class extends Generator {
             : [`${template}/src/plugins/multer.ts`]),
           ...(this.props.plugins.includes('s3') ? [] : [`${template}/src/plugins/s3.ts`]),
           ...(this.props.plugins.includes('cookie') ? [] : [`${template}/src/plugins/cookie.ts`]),
+          ...(this.props.plugins.includes('bcrypt') ? [] : [`${template}/src/plugins/bcrypt.ts`]),
           ...(this.props.plugins.includes('mailer')
             ? []
             : [`${template}/src/plugins/mailer.ts`, `${template}/src/template/email`]),

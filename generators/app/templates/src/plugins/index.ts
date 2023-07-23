@@ -5,7 +5,8 @@ export * from './cookie';<%}%><% if (plugins.includes('multer') || plugins.inclu
 export * from './multer';<%}%><% if (plugins.includes('mailer')) {%>
 export * from './mailer';<%}%><% if (plugins.includes('swagger')) {%>
 export * from './swagger';<%}%><% if (plugins.includes('s3')) {%>
-export * from './s3';<%}%><% if (plugins.includes('redis')) {%>
+export * from './s3';<%}%><% if (plugins.includes('bcrypt')) {%>
+export * from './bcrypt';<%}%><% if (plugins.includes('redis')) {%>
 export * from './redis';<%}%><% if (db === 'mongodb') {%>
 export * from './mongo';<%}%><% if (db === 'postgresql') {%>
 export * from './prisma';<%}%><% if (plugins.includes('redis')) {%>
