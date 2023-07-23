@@ -1,27 +1,19 @@
 import { FastifyInstance } from 'fastify';
 
 import {
-  configPlugin,
-  IConfigOpts,<% if (plugins.includes('cors')) {%>
-  corsPlugin,
-  ICorsPluginOpts,<%}%><% if (plugins.includes('sensible')) {%>
+  configPlugin,<% if (plugins.includes('cors')) {%>
+  corsPlugin,<%}%><% if (plugins.includes('sensible')) {%>
   sensiblePlugin,<%}%><% if (db === 'mongodb') {%>
-  mongodbPlugin,
-  IMongoDBPluginOpts,<%}%><% if (db === 'postgresql') {%>
+  mongodbPlugin,<%}%><% if (db === 'postgresql') {%>
   prismaPlugin,<%}%><% if (plugins.includes('swagger')) {%>
-  swaggerPlugin,
-  ISwaggerPluginOpts,<%}%><% if (plugins.includes('redis')) {%>
-  redisPlugin,
-  IRedisPluginOpts,<%}%><% if (plugins.includes('mailer')) {%>
-  mailerPlugin,
-  IMailerPluginOpts,<%}%><% if (plugins.includes('s3')) {%>
+  swaggerPlugin,<%}%><% if (plugins.includes('redis')) {%>
+  redisPlugin,<%}%><% if (plugins.includes('mailer')) {%>
+  mailerPlugin,<%}%><% if (plugins.includes('s3')) {%>
   s3Plugin,
   IS3PluginOpts,<%}%><% if (plugins.includes('multer') || plugins.includes('s3')) {%>
   multerPlugin,<%}%><% if (plugins.includes('cookie')) {%>
-  cookiePlugin,
-  ICookiePluginOpts,<%}%><% if (plugins.includes('jwt')) {%>
-  jwtPlugin,
-  IJwtPluginOpts,<%}%>
+  cookiePlugin,<%}%><% if (plugins.includes('jwt')) {%>
+  jwtPlugin,<%}%>
 } from '@/plugins';
 import { registerRoutes } from '@/routes';
 
@@ -49,25 +41,25 @@ export const appService = async function (app: FastifyInstance) {
       'S3_REGION',<%}%><% if (plugins.includes('jwt')) {%>
       'JWT_SECRET',<%}%>
     ],
-  } as IConfigOpts);
+  });
 
   <% if (plugins.length) {%>await Promise.all([
     <% if (plugins.includes('cors')) {%>app.register(corsPlugin, {
       credentials: true,
       origin: true,
-    } as ICorsPluginOpts),<%}%><% if (plugins.includes('sensible')) {%>
+    }),<%}%><% if (plugins.includes('sensible')) {%>
     app.register(sensiblePlugin),<%}%><% if (plugins.includes('cookie')) {%>
     app.register(cookiePlugin, {
-      secret: app.cfg.get('COOKIE_SECRET'),
+      secret: app.cfg.get('COOKIE_SECRET') || 'cookiesecret',
       parseOptions: {
         sameSite: 'none',
       },
-    } as ICookiePluginOpts),<%}%><% if (plugins.includes('multer') || plugins.includes('s3')) {%>
+    }),<%}%><% if (plugins.includes('multer') || plugins.includes('s3')) {%>
     app.register(multerPlugins),<%}%><% if (plugins.includes('mailer')) {%>
     app.register(mailerPlugin, {
       transport: {
         host: app.cfg.get('MAIL_HOST'),
-        port: app.cfg.get('MAIL_PORT'),
+        port: parseInt(app.cfg.get('MAIL_PORT') || '587'),
         auth: {
           user: app.cfg.get('MAIL_USER'),
           pass: app.cfg.get('MAIL_PASS'),
@@ -107,25 +99,25 @@ export const appService = async function (app: FastifyInstance) {
           deepLinking: false,
         },
       },
-    } as ISwaggerPluginOpts),<%}%><% if (plugins.includes('s3')) {%>
+    }),<%}%><% if (plugins.includes('s3')) {%>
     app.register(s3Plugin, {
-      provider: app.cfg.get('S3_PROVIDER'),
+      provider: app.cfg.get('S3_PROVIDER') as IS3PluginOpts['provider'],
       region: app.cfg.get('S3_REGION'),
       bucketName: app.cfg.get('S3_BUCKET'),
       accessKeyId: app.cfg.get('S3_ACCESS_KEY_ID'),
       secretAccessKey: app.cfg.get('S3_SECRET_ACCESS_KEY'),
-    } as IS3PluginOpts),<%}%><% if (plugins.includes('redis')) {%>
+    }),<%}%><% if (plugins.includes('redis')) {%>
     app.register(redisPlugin, {
       url: app.cfg.get('REDIS_URL'),
-    } as IRedisPluginOpts),<%}%><% if (db === 'mongodb') {%>
+    }),<%}%><% if (db === 'mongodb') {%>
     app.register(mongodbPlugin, {
       mydb: {
         uri: app.cfg.get('DATABASE_URL'),
       },
-    } as IMongoDBPluginOpts),<%} else {%>app.register(prismaPlugin),<%}%><% if (plugins.includes('jwt')) {%>
+    }),<%} else {%>app.register(prismaPlugin),<%}%><% if (plugins.includes('jwt')) {%>
     app.register(jwtPlugin, {
       secret: app.cfg.get('JWT_SECRET'),
-    } as IJwtPluginOpts),<%}%>
+    }),<%}%>
   ]);<%}%>
 
   await app.register(registerRoutes, {

@@ -18,7 +18,7 @@ declare module 'fastify' {
 }
 
 export interface IS3PluginOpts {
-  provider: 'aws' | 'digitalocean';
+  provider?: 'aws' | 'digitalocean';
   region: string;
   bucketName: string;
   accessKeyId: string;

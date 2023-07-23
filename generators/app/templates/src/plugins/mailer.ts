@@ -15,7 +15,7 @@ export interface IMailerPluginOpts {
   defaults?: SMTPTransport.Options;
 }
 
-export const mailerPlugin = fp(async (app, { transport, defaults }) => {
+export const mailerPlugin = fp(async (app, { transport, defaults }: IMailerPluginOpts) => {
   let transporter: ReturnType<typeof createTransport>;
   if (!defaults) {
     transporter = createTransport(transport);

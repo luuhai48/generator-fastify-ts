@@ -8,6 +8,6 @@ export type ICorsPluginOpts =
   | NonNullable<FastifyCorsOptions>
   | FastifyCorsOptionsDelegate;
 
-export const corsPlugin = fp(async (app, opts) => {
+export const corsPlugin = fp(async (app, opts: ICorsPluginOpts) => {
   await app.register(cors, opts);
 });

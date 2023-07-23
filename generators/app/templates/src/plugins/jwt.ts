@@ -10,10 +10,10 @@ declare module 'fastify' {
 
 export type IJwtPluginOpts = FastifyJWTOptions;
 
-export const jwtPlugin = fp(async (app, opts) => {
+export const jwtPlugin = fp(async (app, opts: IJwtPluginOpts) => {
   await app.register(fastifyJwt, opts as FastifyJWTOptions);
 
-  app.decorate('authVerify', async function (request: FastifyRequest, reply: FastifyReply) {
+  app.decorate('authVerify', async function(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
     } catch (err) {

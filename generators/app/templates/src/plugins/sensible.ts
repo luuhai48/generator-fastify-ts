@@ -3,6 +3,6 @@ import fp from 'fastify-plugin';
 
 export type ISensiblePluginOpts = SensibleOptions;
 
-export const sensiblePlugin = fp(async (app, opts) => {
+export const sensiblePlugin = fp(async (app, opts: ISensiblePluginOpts) => {
   await app.register(sensible, opts);
 });

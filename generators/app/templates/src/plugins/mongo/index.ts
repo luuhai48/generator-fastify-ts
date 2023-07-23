@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 
-import { mongoConnector } from './connector';
+import { mongoConnector, IMongoDBPluginOpts } from './connector';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -8,10 +8,10 @@ declare module 'fastify' {
   }
 }
 
-export const mongodbPlugin = fp(async (app, opts) => {
+export const mongodbPlugin = fp(async (app, opts: IMongoDBPluginOpts) => {
   const dbsManager = await mongoConnector(opts);
   app.decorate('mongo', dbsManager);
   app.addHook('onClose', async () => dbsManager.closeAllConnections());
 });
 
-export { IMongoDBPluginOpts } from './connector';
+export { IMongoDBPluginOpts };
