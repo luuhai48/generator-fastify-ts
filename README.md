@@ -12,8 +12,9 @@
 - [fastify-multer](https://github.com/fox1t/fastify-multer) - handle file upload.
 - [@fastify/redis](https://github.com/fastify/fastify-redis) - Connect and work with ioredis
 - [@fastify/cookie](https://github.com/fastify/fastify-cookie) - adds support for reading and setting cookies.
+- [fastify-bcrypt](https://github.com/beliven-it/fastify-bcrypt) - A Bcrypt hash generator & checker
 - nodemailer - send email with [nodemailer](https://github.com/nodemailer/nodemailer) and [ejs](https://github.com/mde/ejs) template engine.
-- aws s3 - upload file to aws s3 (or digitalocean).
+- s3 - upload file to `aws s3` (or `digitalocean space`).
 
 ## How to use plugins
 
@@ -51,7 +52,12 @@ yo fastify-ts
 
 ## Changelog
 
-### [v0.1.6](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.5)
+### [v0.1.7](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.7)
+
+- Add plugin `bcrypt`
+- Update types for plugins
+
+### [v0.1.6](https://github.com/luuhai48/generator-fastify-ts/tree/0.1.6)
 
 - Update types for plugin `s3`
 
