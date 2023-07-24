@@ -10,14 +10,20 @@ declare module 'fastify' {
 
 export type IJwtPluginOpts = FastifyJWTOptions;
 
-export const jwtPlugin = fp(async (app, opts: IJwtPluginOpts) => {
-  await app.register(fastifyJwt, opts as FastifyJWTOptions);
+export const jwtPlugin = fp(
+  async (app, opts: IJwtPluginOpts) => {
+    await app.register(fastifyJwt, opts);
 
-  app.decorate('authVerify', async function(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      reply.send(err);
-    }
-  });
-});
+    app.decorate('authVerify', async function (request: FastifyRequest, reply: FastifyReply) {
+      try {
+        await request.jwtVerify();
+      } catch (err) {
+        reply.send(err);
+      }
+    });
+  },
+  {
+    name: 'jwt',
+    dependencies: ['cfg'],
+  },
+);

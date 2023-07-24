@@ -12,7 +12,9 @@ yarn
 # Create .env file
 cp .env.example .env
 
-# Start <% if (db === 'mongodb') {%>Mongodb<%} %><% if (plugins.includes('redis')) {%>and Redis<%}%>
+# Update secret values in .env file
+
+# Start <% if (db === 'mongodb') {%>Mongodb<%} %><% if (plugins.includes('redis')) {%> and Redis<%}%>
 docker-compose up -d
 
 # Start API server

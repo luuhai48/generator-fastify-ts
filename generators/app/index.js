@@ -4,9 +4,8 @@ const chalk = require('chalk');
 const yosay = require('yosay');
 
 module.exports = class extends Generator {
-  prompting() {
+  async prompting() {
     this.log(yosay(`${chalk.red('generator-fastify-ts')} generator`));
-
     const prompts = [
       {
         type: 'input',
@@ -23,51 +22,84 @@ module.exports = class extends Generator {
       },
       {
         type: 'checkbox',
+        name: 'modules',
+        message: 'Select pre-defined module(s)',
+        choices: ['authenticate'],
+        default: ['authenticate'],
+      },
+    ];
+
+    await this.prompt(prompts).then((props) => {
+      this.props = props;
+    });
+
+    const selectPluginsPrompts = [
+      {
+        type: 'checkbox',
         name: 'plugins',
         message: 'Select optional plugin(s)',
-        choices: ['cors', 'sensible', 'swagger', 'redis', 'cookie', 'multer', 'mailer', 's3', 'jwt', 'bcrypt'],
+        choices: this.props.modules.includes('authenticate')
+          ? ['cors', 'sensible', 'swagger', 'multer', 's3']
+          : [
+              'cors',
+              'sensible',
+              'swagger',
+              's3',
+              'multer',
+              'redis',
+              'cookie',
+              'mailer',
+              'jwt',
+              'bcrypt',
+            ],
         default: ['cors', 'sensible', 'swagger'],
       },
     ];
 
-    return this.prompt(prompts).then((props) => {
-      this.props = props;
+    await this.prompt(selectPluginsPrompts).then((props) => {
+      this.props.plugins = [
+        ...props.plugins,
+        ...(this.props.modules.includes('authenticate')
+          ? ['redis', 'cookie', 'mailer', 'jwt', 'bcrypt']
+          : []),
+      ];
     });
   }
 
+  _getPluginIgnoreFiles(pluginName, paths) {
+    return this.props.plugins.includes(pluginName)
+      ? []
+      : paths || [`${this.sourceRoot()}/src/plugins/${pluginName}.ts`];
+  }
+
   writing() {
+    const props = this.props;
     const template = this.sourceRoot();
-    const dest = this.destinationPath(`${this.props.name}`);
+    const dest = this.destinationPath(`${props.name}`);
 
     const copyOpts = {
       globOptions: {
         dot: true,
         ignore: [
           `${template}/gitignore`,
-          ...(this.props.plugins.includes('redis') ? [] : [`${template}/src/plugins/redis.ts`]),
-          ...(this.props.db === 'postgresql'
+          ...(props.db === 'postgresql'
             ? [`${template}/src/plugins/mongo`, `${template}/src/errors`]
             : [`${template}/src/plugins/prisma.ts`, `${template}/prisma`]),
-          ...(this.props.plugins.includes('cors') ? [] : [`${template}/src/plugins/cors.ts`]),
-          ...(this.props.plugins.includes('sensible')
-            ? []
-            : [`${template}/src/plugins/sensible.ts`]),
-          ...(this.props.plugins.includes('swagger') ? [] : [`${template}/src/plugins/swagger.ts`]),
-          ...(this.props.plugins.includes('multer') || this.props.plugins.includes('s3')
+          ...(props.plugins.includes('multer') || props.plugins.includes('s3')
             ? []
             : [`${template}/src/plugins/multer.ts`]),
-          ...(this.props.plugins.includes('s3') ? [] : [`${template}/src/plugins/s3.ts`]),
-          ...(this.props.plugins.includes('cookie') ? [] : [`${template}/src/plugins/cookie.ts`]),
-          ...(this.props.plugins.includes('bcrypt') ? [] : [`${template}/src/plugins/bcrypt.ts`]),
-          ...(this.props.plugins.includes('mailer')
-            ? []
-            : [`${template}/src/plugins/mailer.ts`, `${template}/src/template/email`]),
-          ...(this.props.plugins.includes('jwt') ? [] : [`${template}/src/plugins/jwt.ts`]),
+          ...this._getPluginIgnoreFiles('mailer', [
+            `${template}/src/plugins/mailer.ts`,
+            `${template}/src/template/email`,
+          ]),
+          ...['redis', 'cors', 'sensible', 'swagger', 's3', 'cookie', 'bcrypt', 'jwt']
+            .map((p) => this._getPluginIgnoreFiles(p))
+            .flat(),
         ],
       },
     };
 
-    this.fs.copyTpl(template, dest, this.props, {}, copyOpts);
+    this.fs.copyTpl(template, dest, props, {}, copyOpts);
     this.fs.copy(`${template}/gitignore`, `${dest}/.gitignore`);
   }
 

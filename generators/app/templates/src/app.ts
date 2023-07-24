@@ -17,7 +17,6 @@ import {
   jwtPlugin,<%}%>
 } from '@/plugins';
 import { registerRoutes } from '@/routes';
-import { bcryptPlugin } from './plugins/bcrypt';
 
 export const appService = async function (app: FastifyInstance) {
   /**
@@ -45,23 +44,23 @@ export const appService = async function (app: FastifyInstance) {
     ],
   });
 
-  <% if (plugins.length) {%>await Promise.all([
-    <% if (plugins.includes('cors')) {%>app.register(corsPlugin, {
+  <% if (plugins.length) {%>await app
+    <% if (plugins.includes('cors')) {%>.register(corsPlugin, {
       credentials: true,
       origin: true,
-    }),<%}%><% if (plugins.includes('sensible')) {%>
-    app.register(sensiblePlugin),<%}%><% if (plugins.includes('bcrypt')) {%>
-    app.register(bcryptPlugin, {
-      saltWorkFactor:: 12,
-    }),<%}%><% if (plugins.includes('cookie')) {%>
-    app.register(cookiePlugin, {
+    })<%}%><% if (plugins.includes('sensible')) {%>
+    .register(sensiblePlugin)<%}%><% if (plugins.includes('bcrypt')) {%>
+    .register(bcryptPlugin, {
+      saltWorkFactor: 12,
+    })<%}%><% if (plugins.includes('cookie')) {%>
+    .register(cookiePlugin, {
       secret: app.cfg.get('COOKIE_SECRET') || 'cookiesecret',
       parseOptions: {
         sameSite: 'none',
       },
-    }),<%}%><% if (plugins.includes('multer') || plugins.includes('s3')) {%>
-    app.register(multerPlugins),<%}%><% if (plugins.includes('mailer')) {%>
-    app.register(mailerPlugin, {
+    })<%}%><% if (plugins.includes('multer') || plugins.includes('s3')) {%>
+    .register(multerPlugins)<%}%><% if (plugins.includes('mailer')) {%>
+    .register(mailerPlugin, {
       transport: {
         host: app.cfg.get('MAIL_HOST'),
         port: parseInt(app.cfg.get('MAIL_PORT') || '587'),
@@ -73,8 +72,8 @@ export const appService = async function (app: FastifyInstance) {
       defaults: {
         from: app.cfg.get('MAIL_FROM'),
       },
-    } as IMailerPluginOpts),<%}%><% if (plugins.includes('swagger')) {%>
-    app.register(swaggerPlugin, {
+    })<%}%><% if (plugins.includes('swagger')) {%>
+    .register(swaggerPlugin, {
       swagger: {
         swagger: {
           info: {
@@ -98,34 +97,33 @@ export const appService = async function (app: FastifyInstance) {
         },
       },
       swaggerUI: {
-        routePrefix: '/api/doc',
+        routePrefix: '/swagger',
         uiConfig: {
           docExpansion: 'list',
           deepLinking: false,
         },
       },
-    }),<%}%><% if (plugins.includes('s3')) {%>
-    app.register(s3Plugin, {
+    })<%}%><% if (plugins.includes('s3')) {%>
+    .register(s3Plugin, {
       provider: app.cfg.get('S3_PROVIDER') as IS3PluginOpts['provider'],
       region: app.cfg.get('S3_REGION') || '',
       bucketName: app.cfg.get('S3_BUCKET') || '',
       accessKeyId: app.cfg.get('S3_ACCESS_KEY_ID') || '',
       secretAccessKey: app.cfg.get('S3_SECRET_ACCESS_KEY') || '',
-    }),<%}%><% if (plugins.includes('redis')) {%>
-    app.register(redisPlugin, {
+    })<%}%><% if (plugins.includes('redis')) {%>
+    .register(redisPlugin, {
       url: app.cfg.get('REDIS_URL') || '',
-    }),<%}%><% if (db === 'mongodb') {%>
-    app.register(mongodbPlugin, {
+    })<%}%><% if (db === 'mongodb') {%>
+    .register(mongodbPlugin, {
       mydb: {
         uri: app.cfg.get('DATABASE_URL') || '',
       },
-    }),<%} else {%>app.register(prismaPlugin),<%}%><% if (plugins.includes('jwt')) {%>
-    app.register(jwtPlugin, {
+    })<%} else {%>app.register(prismaPlugin),<%}%><% if (plugins.includes('jwt')) {%>
+    .register(jwtPlugin, {
       secret: app.cfg.get('JWT_SECRET') || 'jwtsecret',
-    }),<%}%>
-  ]);<%}%>
+    })<%}%>;<%}%>
 
   await app.register(registerRoutes, {
-    prefix: `/api/v${app.cfg.get('API_VERSION') || 1}`,
+    prefix: `/v${app.cfg.get('API_VERSION') || 1}`,
   });
 };

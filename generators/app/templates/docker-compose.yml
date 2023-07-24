@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   <% if (plugins.includes('redis')) {%>redis:
-    image: redis:7.0.4-alpine
+    image: redis:6.0.20-alpine
     container_name: redis_local
     restart: always
     ports:
@@ -18,7 +18,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER:-my_user}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASS:-password123}
-      - MONGO_INITDB_DATABASE=${DB_NAME:-mydb}
+      - MONGO_INITDB_DATABASE=${DB_NAME:-my_db}
     volumes:
       - mongodblocal:/data/db
 <%} else {%>postgresql:
@@ -30,7 +30,7 @@ services:
     environment:
       - POSTGRESQL_USERNAME=${DB_USER:-my_user}
       - POSTGRESQL_PASSWORD=${DB_PASS:-password123}
-      - POSTGRESQL_DATABASE=${DB_DB:-mydb}
+      - POSTGRESQL_DATABASE=${DB_DB:-my_db}
     volumes:
       - postgreslocal:/bitnami/postgresql
 <%}%>

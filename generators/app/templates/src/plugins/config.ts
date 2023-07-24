@@ -33,6 +33,11 @@ class Config {
   }
 }
 
-export const configPlugin = fp(async (app, opts: IConfigOpts) => {
-  app.decorate('cfg', new Config({ envsWhitelist: [], ...opts }));
-});
+export const configPlugin = fp(
+  async (app, opts: IConfigOpts) => {
+    app.decorate('cfg', new Config(opts));
+  },
+  {
+    name: 'cfg',
+  },
+);

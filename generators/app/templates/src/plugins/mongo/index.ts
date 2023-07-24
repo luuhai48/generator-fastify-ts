@@ -8,10 +8,16 @@ declare module 'fastify' {
   }
 }
 
-export const mongodbPlugin = fp(async (app, opts: IMongoDBPluginOpts) => {
-  const dbsManager = await mongoConnector(opts);
-  app.decorate('mongo', dbsManager);
-  app.addHook('onClose', async () => dbsManager.closeAllConnections());
-});
-
 export { IMongoDBPluginOpts };
+
+export const mongodbPlugin = fp(
+  async (app, opts: IMongoDBPluginOpts) => {
+    const dbsManager = await mongoConnector(opts);
+    app.decorate('mongo', dbsManager);
+    app.addHook('onClose', async () => dbsManager.closeAllConnections());
+  },
+  {
+    name: 'mongodb',
+    dependencies: ['cfg'],
+  },
+);

@@ -15,11 +15,22 @@ declare module 'fastify' {
   }
 }
 
-export const multerPlugin = fp(async (app) => {
-  await app.register(multer.contentParser);
-  app.decorate('multer', multer({
-    storage: multer.memoryStorage(), limits: {
-      fileSize: 20 * 1024 * 1024, // 20MB
-    }
-  }));
-});
+export const multerPlugin = fp(
+  async (app) => {
+    await app.register(multer.contentParser);
+    app.decorate(
+      'multer',
+      multer({
+        storage: multer.memoryStorage(),
+        limits: {
+          fileSize: 20 * 1024 * 1024, // 20MB
+        },
+      }),
+    );
+  },
+  {
+    name: 'multer',
+    dependencies: ['cfg'],
+  },
+);
+

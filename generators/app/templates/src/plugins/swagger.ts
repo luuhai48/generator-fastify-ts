@@ -7,7 +7,13 @@ export type ISwaggerPluginOpts = {
   swaggerUI: FastifySwaggerUiOptions;
 };
 
-export const swaggerPlugin = fp(async (app, opts: ISwaggerPluginOpts) => {
-  await app.register(fastifySwagger, opts.swagger);
-  await app.register(fastifySwaggerUi, opts.swaggerUI);
-});
+export const swaggerPlugin = fp(
+  async (app, opts: ISwaggerPluginOpts) => {
+    await app.register(fastifySwagger, opts.swagger);
+    await app.register(fastifySwaggerUi, opts.swaggerUI);
+  },
+  {
+    name: 'swagger',
+    dependencies: ['cfg'],
+  },
+);

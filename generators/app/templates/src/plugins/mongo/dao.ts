@@ -81,8 +81,6 @@ export type BulkWriteArgs<T> = {
   >;
 };
 
-const collation = { locale: 'en', caseLevel: false, strength: 1 };
-
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 100;
 const DEFAULT_SORT = -1;
@@ -122,7 +120,6 @@ export abstract class BaseDao<T> {
 
     return this.model
       .find(filter, projection, {
-        collation,
         sort,
         skip,
         limit,
@@ -241,7 +238,6 @@ export abstract class BaseDao<T> {
     } = args;
     return this.model
       .findOne(filter, projection, {
-        collation,
         sort,
         skip,
         limit,
@@ -255,16 +251,14 @@ export abstract class BaseDao<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async aggregate<R = any>(args: AggregateArgs) {
     const { pipeline } = args;
-    return this.model.aggregate<R>(pipeline, { collation }).catch((e) => {
+    return this.model.aggregate<R>(pipeline).catch((e) => {
       throw new AggregationError(e);
     });
   }
 
   async count(args: FilterArgs<T>) {
     const { filter } = args;
-    return this.model.countDocuments(filter, {
-      collation,
-    });
+    return this.model.countDocuments(filter);
   }
 
   async createDocuments(args: CreateDocumentsArgs<T>) {
@@ -320,7 +314,6 @@ export abstract class BaseDao<T> {
       .findOneAndUpdate(filter, update, {
         upsert,
         new: getNew,
-        collation,
         sort,
         lean,
         projection,
@@ -343,7 +336,6 @@ export abstract class BaseDao<T> {
     const { filter, sort } = args;
     return this.model
       .deleteMany(filter, {
-        collation,
         sort,
       })
       .catch((e) => {
@@ -355,7 +347,6 @@ export abstract class BaseDao<T> {
     const { filter, sort } = args;
     return this.model
       .findOneAndDelete(filter, {
-        collation,
         sort,
       })
       .catch((e) => {

@@ -110,6 +110,13 @@ const s3PluginFuncs = (opts: IS3PluginOpts) => {
   };
 };
 
-export const s3Plugin = fp(async (app, opts: IS3PluginOpts) => {
-  app.decorate('s3', s3PluginFuncs(opts));
-});
+export const s3Plugin = fp(
+  async (app, opts: IS3PluginOpts) => {
+    app.decorate('s3', s3PluginFuncs(opts));
+  },
+  {
+    name: 's3',
+    dependencies: ['cfg'],
+  },
+);
+
